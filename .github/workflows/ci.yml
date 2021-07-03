@@ -1,4 +1,10 @@
-on: [push, pull_request]
+on:
+  - push:
+    - branches:
+      - 'main_master'
+      - 'master'
+      - 'm_master'
+
 name: CI
 jobs:
   ci:
