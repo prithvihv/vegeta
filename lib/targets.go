@@ -311,7 +311,13 @@ func NewHTTPTargeter(src io.Reader, body []byte, hdr http.Header) Targeter {
 				}
 				scBody := peekingScanner{src: bufio.NewScanner(fBody)}
 				var body []byte
+				var firstLine bool = true
 				for scBody.Scan() {
+					if !firstLine {
+						body = append(body, []byte("\r\n")...)
+					} else {
+						firstLine = false
+					}
 					lineBody := strings.TrimSpace(scBody.Text())
 					if strings.HasPrefix(lineBody, "@") {
 						if fileBin, err := ioutil.ReadFile(lineBody[1:]); err == nil {
@@ -321,7 +327,6 @@ func NewHTTPTargeter(src io.Reader, body []byte, hdr http.Header) Targeter {
 						}
 					} else {
 						body = append(body, scBody.src.Bytes()...)
-						body = append(body, []byte("\r\n")...)
 					}
 				}
 				tgt.Body = body
